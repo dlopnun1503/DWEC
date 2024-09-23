@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<body onload="myFunction();">
+<script>
+function myFunction() {
+    var mensaje;
+    var pregunta1 = prompt ("Dime un numero: ", "0");
+    var pregunta2 = prompt ("Dime otro numero: ", "0");
+    var pregunta3 = prompt ("Dime otro numero: ", "0");
+    if((pregunta1 > 10 && pregunta1 < 100) && (pregunta2 > 10 && pregunta2 < 100) && (pregunta3 > 10 && pregunta3 < 100)){
+        mensaje = "OK";
+    }else{
+        mensaje = "No cumple";
+    }
+    alert(mensaje);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<body onload="myFunction();">
+<script>
+function myFunction() {
+    var mensaje;
+    var pregunta1 = prompt ("Dime un numero: ", "0");
+    var pregunta2 = prompt ("Dime otro numero: ", "0");
+    if(pregunta1 > pregunta2){
+        mensaje = pregunta1 +" es mayor que " +pregunta2;
+    }else if(pregunta2 > pregunta1){
+        mensaje = pregunta2 +" es mayor que " +pregunta1;
+    }else{
+        mensaje = pregunta1 +" es igual que " +pregunta2;
+    }
+    alert(mensaje);
+}
+</script>
+</body>
+</html>

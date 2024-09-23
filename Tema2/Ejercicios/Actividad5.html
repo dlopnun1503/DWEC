@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<body onload="myFunction();">
+<script>
+function myFunction() {
+    var mensaje;
+    var pregunta1 = prompt ("Dime un numero: ", "0");
+    var pregunta2 = prompt ("Dime otro numero: ", "0");
+    var pregunta3 = prompt ("Dime otro numero: ", "0");
+    if(pregunta1 > pregunta2 && pregunta1 > pregunta3 && pregunta2 > pregunta3){
+        mensaje = pregunta1 +" > "+ pregunta2 + " > "+ pregunta3;
+    }else if(pregunta1 > pregunta2 && pregunta1 > pregunta3 && pregunta3 > pregunta2){
+        mensaje = pregunta1 +" > "+ pregunta3 + " > "+ pregunta2;
+    }else if(pregunta2 > pregunta1 && pregunta2 > pregunta3 && pregunta3 > pregunta1){
+        mensaje = pregunta2 +" > "+ pregunta3 + " > "+ pregunta1;
+    }else if(pregunta2 > pregunta1 && pregunta2 > pregunta3 && pregunta1 > pregunta3){
+        mensaje = pregunta2 +" > "+ pregunta1 + " > "+ pregunta3;
+    }else if(pregunta3 > pregunta2 && pregunta3 > pregunta1 && pregunta1 > pregunta2){
+        mensaje = pregunta3 +" > "+ pregunta1 + " > "+ pregunta2;
+    }else if(pregunta3 > pregunta2 && pregunta3 > pregunta1 && pregunta2 > pregunta1){
+        mensaje = pregunta3 +" > "+ pregunta2 + " > "+ pregunta1;
+    }else if(pregunta1 == pregunta2 && pregunta1 == pregunta3 && pregunta3 == pregunta2){
+        mensaje = pregunta1 +" = "+ pregunta3 + " = "+ pregunta2;
+    }else if(pregunta1 == pregunta2 && pregunta1 > pregunta3 && pregunta3 < pregunta2){
+        mensaje = pregunta1 +" = "+ pregunta2 + " > "+ pregunta3;
+    }else if(pregunta1 == pregunta3 && pregunta1 > pregunta2 && pregunta3 > pregunta2){
+        mensaje = pregunta1 +" = "+ pregunta3 + " > "+ pregunta2;
+    }else if(pregunta3 == pregunta2 && pregunta3 > pregunta1 && pregunta2 > pregunta1){
+        mensaje = pregunta3 +" = "+ pregunta2 + " > "+ pregunta1;
+    }else if(pregunta1 == pregunta2 && pregunta1 < pregunta3 && pregunta3 > pregunta2){
+        mensaje = pregunta1 +" = "+ pregunta2 + " < "+ pregunta3;
+    }else if(pregunta1 == pregunta3 && pregunta1 < pregunta2 && pregunta3 < pregunta2){
+        mensaje = pregunta1 +" = "+ pregunta3 + " < "+ pregunta2;
+    }else if(pregunta3 == pregunta2 && pregunta3 < pregunta1 && pregunta2 < pregunta1){
+        mensaje = pregunta3 +" = "+ pregunta2 + " < "+ pregunta1;
+    }
+    alert(mensaje);
+}
+</script>
+</body>
+</html>

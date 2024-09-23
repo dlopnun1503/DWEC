@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<body onload="myFunction();">
+<script>
+function myFunction() {
+    var mensaje;
+    var pregunta1 = parseFloat (prompt ("Dime tu sueldo: ", "0"));
+    var pregunta2 = parseInt(prompt ("Dime tu antiguedad: ", "0"));
+    var valorFinal;
+    if(pregunta1 < 750 && pregunta2 >= 10){
+        valorFinal = (pregunta1 * 0.1) + pregunta1;
+        mensaje = "El valor total de la nomina es de " +valorFinal+ " euros";
+    }else if (pregunta1 > 750 && pregunta2 >= 10){
+        valorFinal = (pregunta1 * 0.05) + pregunta1;
+        mensaje = "El valor total de la nomina es de " +valorFinal+ " euros";
+    }else if(pregunta2 < 10){
+        mensaje = "El valor total de la nomina es de " +pregunta1+ " euros"
+    }
+    alert(mensaje);
+}
+</script>
+</body>
+</html>
