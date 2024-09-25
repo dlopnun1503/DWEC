@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<body onload="myFunction();">
+<script>
+function myFunction() {
+    var mensaje;
+    var pregunta1 = parseInt(prompt("Dime un numero: ", "0"));
+    var pregunta2 = 1;
+    var resultado = 1;
+    // Con un if comparamos si el numero es = 0 en caso de que lo sea su factorial sera = 1
+    if(pregunta1 == 0){
+        mensaje = "El factorial de 0 es igual a 1"
+    }
+    /*
+    Aqui decimos que mientras pregunta2 sea menor que pregunta1 iremos sumando 1 a pregunta2,
+    para despues ir multiplicando al resultado
+    */
+    while(pregunta2 < pregunta1){
+        pregunta2++;
+        resultado *= pregunta2;
+        mensaje = "El factorial de " +pregunta1+ " es igual a " +resultado;
+    }
+    alert(mensaje);
+}
+</script>
+</body>
+</html>

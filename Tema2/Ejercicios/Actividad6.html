@@ -7,7 +7,9 @@ function myFunction() {
     var pregunta1 = parseFloat (prompt ("Dime un numero para A: ", "0"));
     var pregunta2 = parseFloat(prompt ("Dime un numero para B: ", "0"));
     var pregunta3 = parseFloat(prompt ("Dime un numero para C: ", "0"));
+    //Calculamos la raiz de la operacion indicada entre parentesis
     var valor1 = parseFloat (Math.sqrt((pregunta2*pregunta2) - (4*pregunta1*pregunta3)));
+    // Calculamos los dos posibles valores de x
     var x1 = parseFloat(-pregunta2 - valor1)/(2*pregunta1);
     var x2 = parseFloat(-pregunta2 + valor1)/(2*pregunta1); 
     mensaje = "x1 = " +x1+ " y x2 = " +x2;

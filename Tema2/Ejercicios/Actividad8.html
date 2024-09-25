@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<body onload="myFunction();">
+<script>
+function myFunction() {
+    var mensaje;
+    var pregunta1 = parseInt(prompt("Dime un numero: ", "0"));
+    var i = 2;
+    var r = 0;
+    /* 
+    Mediante un while ponemos que mientras pregunta1 sea distinto de 1,
+    seguiremos dividiendo entre i y le sumaremos a la cadena r el valor de i 
+    */
+    while(pregunta1 != 1){
+        // Si el resto de pregunta1 entre i es distinto de 0 le sumaremos 1 a i
+            if((pregunta1 % i) != 0){
+                i++
+            }else{
+            pregunta1 /= i; 
+            r += i;
+            // Ponemos la condicion que si pregunta1 es distinto de 1 añadimos * a la cadena
+            if(pregunta1 != 1){ 
+                r += " * ";
+            }
+            
+        }
+        }
+        mensaje = "La descomposicion es " +r;
+    alert(mensaje);
+}
+</script>
+</body>
+</html>

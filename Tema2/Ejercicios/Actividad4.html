@@ -7,6 +7,10 @@ function myFunction() {
     var pregunta1 = parseFloat (prompt ("Dime tu sueldo: ", "0"));
     var pregunta2 = parseInt(prompt ("Dime tu antiguedad: ", "0"));
     var valorFinal;
+    /*
+    En un if comparamos el sueldo y el saldo con distintos valores,
+    tras esto, según en que rango este le sumaremos o no la prima al saldo
+    */
     if(pregunta1 < 750 && pregunta2 >= 10){
         valorFinal = (pregunta1 * 0.1) + pregunta1;
         mensaje = "El valor total de la nomina es de " +valorFinal+ " euros";
