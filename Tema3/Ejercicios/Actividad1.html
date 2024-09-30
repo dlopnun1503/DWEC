@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+ <script>
+    (function(){
+        let figura = null;
+        let Vcubo = null;
+        let Vesfera = null;
+        let VcilindroBase = null;
+        let Vcilindroh = null;
+   
+    function F1(){
+        var pregunta1 = prompt("Elija una opcion: \n1. Elija entre un cubo, esfera o cilindro. \n2. Introduzca los valores \n3. Calculo volumen \n4. Calculo area \n5. Salir");
+        switch(pregunta1){
+            case "1":
+                figura = F2();
+                break;
+            case "2":
+                if(figura == 1){
+                    Vcubo = F6_1();
+                }else if(figura == 2){
+                    Vesfera = F6_2();
+                }else if(figura == 3){
+                    Vcilindroh = F6_3;
+                    VcilindroBase = F6_4();
+                }
+                break;
+            case "3":
+                F3();
+                break;
+            case "4":
+                F4();
+                break;
+            case "5":
+                F5();
+                break;
+            default:
+                alert("ERROR");
+                break;
+        }
+    };
+    F1();
+    
+    function F2(){
+        var pregunta2 = parseInt (prompt("Elija una opcion: \n1.Cubo.\n2.Esfera.\n3.Cilindro."));
+        return F1();
+    }
+
+    function F6_1 (){
+        var cubo = prompt("Dime el lado del cubo (cm)");
+        return F1();
+    }
+    function F6_2 (){
+        var esfera = prompt("Dime el valor para la esfera (cm)");
+        return F1();
+    }
+    function F6_3 (){
+        var altura = prompt("Dime el valor para la altura del cilindro(cm)");
+    }
+    function F6_4(){
+        var base = prompt("Dime el valor para la base del cilindro(cm)");
+        return F1();
+    }
+
+    function F3(){
+        if (figura == 1){
+            var volumenCubo = parseFloat(Vcubo**3);
+            var mensajeCubo1 = "El volumen del cubo es igua a " +volumenCubo;
+            alert(mensajeCubo1);
+        }else if(figura == 2){
+            var volumenEsfera = parseFloat(((4 * 3.1416)/3) * (Vesfera**3));
+            var mensajeEsfera1 = "El volumen del cubo es igua a " +volumenEsfera;
+            alert(mensajeEsfera1);
+        }else if(figura == 3){
+            var volumenCilindro = parseFloat(3.1416 * (VcilindroBase**2) * Vcilindroh);
+            var mensajeCilindro1 = "El volumen del cubo es igua a " +volumenCilindro;
+            alert(mensajeCilindro1);
+        }
+        return F1();
+    }
+
+    function F4(){
+        if (figura == 1){
+            var areaCubo = parseFloat((Vcubo**2) * 6);
+            var mensajeCubo2 = "El area del cubo es igua a " +areaCubo;
+            alert(mensajeCubo2);
+        }else if(figura == 2){
+            var areaEsfera = parseFloat(4 * 3.1416 * Vesfera * 2);
+            var mensajeEsfera2 = "El area del cubo es igua a " +areaEsfera;
+            alert(mensajeEsfera2);
+        }else if(figura == 3){
+            var areaCilindro = parseFloat((2 * 3.1416 * Vcilindroh * VcilindroBase) + (2 * 3.1416 * (VcilindroBase**2)));
+            var mensajeCilindro2 = "El area del cubo es igua a " +areaCilindro;
+            alert(mensajeCilindro2);
+        }
+        return F1();
+    }
+
+    function F5 (){
+        return 0;
+    }
+})();
+  </script>
+</head>
+<body>
+</body>
+</html>
