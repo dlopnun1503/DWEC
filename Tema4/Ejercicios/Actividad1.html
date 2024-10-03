@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script>
+        let valores = [];
+        function menu() {
+            do {
+                pregunta = prompt("Introduzca el dato (f para terimnar) ");
+                if(!isNaN(pregunta) && pregunta >= 0){
+                    let numeros = parseInt(pregunta);
+                    valores.push(numeros);
+                }
+            } while (pregunta != "f");
+            if(pregunta == "f"){
+                calcularMedia();
+                calcularRango();
+            }
+        }
+
+
+        function calcularMedia() {
+            var suma = 0;
+            var media = 0;
+            for (var i = 0; i < valores.length; i++) {
+                suma += valores[i];
+                }
+            media = suma / valores.length;
+            alert("La media es " +media);
+        }
+
+        function calcularRango() {
+            var maximo = valores[0];
+            var minimo = valores [0];
+            for (var i = 0; i < valores.length; i++) {
+                if(maximo < valores[i]){
+                    maximo = valores[i];
+                }
+                if(mnimo > valores[i]){
+                    minimo = valores[i];
+                }
+            }
+            var rango = maximo - minimo;
+            alert("El rango es " +rango);
+        }
+
+        function calcularModa() {
+        }
+
+        menu();
+    </script>
+</head>
+
+<body>
+</body>
+
+</html>
