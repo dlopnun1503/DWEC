@@ -3,51 +3,140 @@
 
 <head>
     <script>
-        let valores = [];
-        function menu() {
-            do {
-                pregunta = prompt("Introduzca el dato (f para terimnar) ");
-                if(!isNaN(pregunta) && pregunta >= 0){
-                    let numeros = parseInt(pregunta);
-                    valores.push(numeros);
-                }
-            } while (pregunta != "f");
-            if(pregunta == "f"){
-                calcularMedia();
-                calcularRango();
-            }
-        }
-
-
-        function calcularMedia() {
-            var suma = 0;
-            var media = 0;
-            for (var i = 0; i < valores.length; i++) {
-                suma += valores[i];
-                }
-            media = suma / valores.length;
-            alert("La media es " +media);
-        }
-
-        function calcularRango() {
-            var maximo = valores[0];
-            var minimo = valores [0];
-            for (var i = 0; i < valores.length; i++) {
-                if(maximo < valores[i]){
-                    maximo = valores[i];
-                }
-                if(mnimo > valores[i]){
-                    minimo = valores[i];
+        (function () {
+            let valores = [];
+            function menu() {
+                do {
+                    pregunta = prompt("Introduzca el dato (f para terimnar) ");
+                    if (!isNaN(pregunta) && pregunta >= 0) {
+                        let numeros = parseInt(pregunta);
+                        valores.push(numeros);
+                    }
+                } while (pregunta != "f");
+                if (pregunta == "f") {
+                    calcularMedia();
+                    calcularRango();
+                    calcularModa();
                 }
             }
-            var rango = maximo - minimo;
-            alert("El rango es " +rango);
-        }
 
-        function calcularModa() {
-        }
 
-        menu();
+            function calcularMedia() {
+                var suma = 0;
+                var media = 0;
+                for (var i = 0; i < valores.length; i++) {
+                    suma += valores[i];
+                }
+                media = suma / valores.length;
+                alert("La media es " + media);
+            }
+
+            function calcularRango() {
+                var maximo = valores[0];
+                var minimo = valores[0];
+                for (var i = 0; i < valores.length; i++) {
+                    if (maximo < valores[i]) {
+                        maximo = valores[i];
+                    }
+                    if (minimo > valores[i]) {
+                        minimo = valores[i];
+                    }
+                }
+                var rango = maximo - minimo;
+                alert("El rango es " + rango);
+            }
+
+            function calcularModa() {
+                var maximo = 0;
+                var minimo = 0;
+                var hayDist = false;
+                var numMedio = false;
+                var modas = "";
+                var contModas = 0;
+                var b = [];
+                var m = [] //Guarda modas en caso de adyacencia
+                /*
+                En este for vamos a recorrer el array de valores,
+                en caso de que el valor no este definido en el array de b que contiene el array de valores le ponemos el valor a 1,
+                si esta definido aumentamos dicho valor
+                */
+                for (var i = 0; i < valores.length; i++) {
+                    b[valores[i]];
+                    if (b[valores[i]] == undefined) {
+                        b[valores[i]] = 1;
+                    } else {
+                        b[valores[i]]++;
+                    }
+                }
+
+                /*
+                En este for volvemos a recorrer el array,
+                si el valor de b cumple dicha condicion igualaremos maximo a dicho valor para cambiar su valor de 0
+                */
+                for (var i = 0; i < valores.length; i++) {
+                    if (b[valores[i]] >= maximo) {
+                        maximo = b[valores[i]];
+                    }
+                }
+
+                
+                /*
+                En caso de que el valor de b sea menor que el maximo 
+                ponemos el valor de distinto en true indicando que hay mas modas
+                */
+                for (var i = 0; i < valores.length; i++) {
+                    if (b[valores[i]] < maximo) {
+                        hayDist = true;
+                    }
+                }
+
+                /*
+                Si b y maximo son iguales y distinto es true
+                concatenamos a modas la cadena indicaday sumamos al contador de modas el numero de modas
+                igualamos b a 0 para que no vuelva a cumplir la condicion y asi en la cadena modas no volvamos a ver el valor repetido
+                */
+                for (var i = 0; i < valores.length; i++) {
+                    if (b[valores[i]] == maximo && hayDist == true) {
+                        modas += " , " + valores[i];
+                        contModas++;
+                        m[contModas] = valores[i];
+                        b[valores[i]] = 0
+                    }
+                }
+
+                /*
+                Si el contador de modas es igual a dos y hay algun numero entre ambas modas vamos a poner como true la variable numMedio
+                esta variable indica si hay un numero entre ambas modas
+                */
+                if (contModas == 2) {
+                    for (var i = 0; i < valores.length; i++) {
+                        if ((valores[i] > m[1] && valores[i] < m[2]) || (valores[i] < m[1] && valores[i] > m[2])) {
+                            numMedio = true;
+                        }
+                    }
+                }
+
+                /*
+                Si no hay numero en medio por lo que la variable sera false y el contador de modas es 2
+                concatenaremos a la cadena de modas el resultado de la suma de las modas dividido entre dos
+                */
+                if (numMedio == false && contModas == 2) {
+                    modas = ", " + (m[1] + m[2]) / 2;
+                }
+
+                /*
+                Si la cadena modas no esta vacia mostrará un mensaje
+                si estuviera vacia mostraría otro
+                */
+                if (modas != "") {
+                    alert("La moda es" + modas);
+                } else {
+                    alert("No tiene moda");
+                }
+            }
+            menu();
+        })();
+
     </script>
 </head>
 
