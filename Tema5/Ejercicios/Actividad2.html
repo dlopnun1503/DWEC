@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script>
+        function menu() {
+            let valores = [];
+            let vectores = [];
+            let numeros;
+            do {
+                pregunta = prompt("Introduzca el dato (f para terimnar)(c para insertar nuevos vectores) ");
+                if (!isNaN(pregunta)) {
+                    numeros = parseInt(pregunta);
+                    vectores.push(numeros);
+                }
+                if (pregunta == "c") {
+                        valores.push(vectores);
+                        vectores = [];
+                    }
+            } while (pregunta != "f");
+            if (pregunta == "f") {
+                valores.push(vectores);
+                paresImpares(valores);
+            }
+        }
+
+
+        function paresImpares(valores) {
+            let pares = [];
+            let impares = [];
+            for (i = 0; i < valores.length; i++) {
+                for (j = 0; j < valores[i].length; j++) {
+                    if ((valores[i][j] % 2) == 0) {
+                        pares.push(valores[i][j]);
+                    } else if ((valores[i][j] % 2) != 0) {
+                        impares.push(valores[i][j]);
+                    }
+                }
+            }
+            alert("Pares: " + pares + "\n" + "Impares: " + impares);
+        }
+        menu();
+    </script>
+</head>
+
+<body>
+</body>
+
+</html>

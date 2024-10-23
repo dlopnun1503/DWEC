@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script>
+        function menu() {
+            let notas = [];
+            let criterios = [];
+            let numeros;
+            let sum = [];
+            let medias = [];
+            let media = 0;
+            do {
+                pregunta = prompt("Introduzca el dato (f para terimnar)(s para insertar nuevos vectores) ");
+                if (!isNaN(pregunta) && pregunta <= 10 && pregunta >= 0) {
+                    numeros = parseInt(pregunta);
+                    criterios.push(numeros);
+                    sum.push(numeros);
+                }
+                if (pregunta == "s") {
+                    for(var i = 0; i < sum.length; i++){
+                        media += sum[i];
+                    }
+                    media = media / sum.length;
+                    medias.push(media);
+                    media = 0;
+                    notas.push(criterios);
+                    criterios = [];
+                }
+            } while (pregunta != "f");
+            if (pregunta == "f") {
+                for(var i = 0; i < sum.length; i++){
+                        media += sum[i];
+                    }
+                    media = media / sum.length;
+                    medias.push(media);
+                    notas.push(criterios);
+                calcularMedias(media);
+            }
+        }
+
+
+        function calcularMedias(medias) {
+            let sum = 0;
+            for (var i = 0; i < medias.length; i++) {
+                sum = medias[i]++;
+            }
+            sum = sum / medias.length;
+            alert("La media total es: " + sum);
+        }
+
+
+        function calcularMaximo(notas) {
+            let maximos = [];
+            var max = 0;
+            for (var i = 0; i < notas.length; i++) {
+                for (var j = 0; j < notas[i].length; j++) {
+                    max = Math.max(...notas[i][j]);
+                    maximos.push(max);
+                    notas[i][j]++;
+                }
+            }
+        }
+        menu();
+    </script>
+</head>
+
+<body>
+</body>
+
+</html>

@@ -3,9 +3,8 @@
 
 <head>
     <script>
-        (function () {
-            let valores = [];
             function menu() {
+                let valores = [];
                 do {
                     pregunta = prompt("Introduzca el dato (f para terimnar) ");
                     if (!isNaN(pregunta) && pregunta >= 0) {
@@ -14,14 +13,14 @@
                     }
                 } while (pregunta != "f");
                 if (pregunta == "f") {
-                    calcularMedia();
-                    calcularRango();
-                    calcularModa();
+                    calcularMedia(valores);
+                    calcularRango(valores);
+                    calcularModa(valores);
                 }
             }
 
 
-            function calcularMedia() {
+            function calcularMedia(valores) {
                 var suma = 0;
                 var media = 0;
                 for (var i = 0; i < valores.length; i++) {
@@ -31,7 +30,7 @@
                 alert("La media es " + media);
             }
 
-            function calcularRango() {
+            function calcularRango(valores) {
                 var maximo = valores[0];
                 var minimo = valores[0];
                 for (var i = 0; i < valores.length; i++) {
@@ -46,7 +45,7 @@
                 alert("El rango es " + rango);
             }
 
-            function calcularModa() {
+            function calcularModa(valores) {
                 var maximo = 0;
                 var minimo = 0;
                 var hayDist = false;
@@ -135,7 +134,6 @@
                 }
             }
             menu();
-        })();
 
     </script>
 </head>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script>
+            function menu() {
+                let valores = [];
+                do {
+                    pregunta = prompt("Introduzca el dato (f para terimnar) ");
+                    if (!isNaN(pregunta) && pregunta >= 0) {
+                        let numeros = parseInt(pregunta);
+                        valores.push(numeros);
+                    }
+                } while (pregunta != "f");
+                if (pregunta == "f") {
+                    calcularMediana(valores);
+                }
+            }
+
+
+            function calcularMediana(valores){
+                // Ordenamos el array 
+                valores.sort(function (a,b){return a-b});
+                var x = 0;
+                var y = 0;
+                /**
+                 * En el if decimos que si el resto de la longitud entre dos es 0, dividimos la longitud-1 entre 2 y obtenemos el valor de esa posicion del array 
+                 * En el else if tenemos que tener dos variable una que cuyo resultado sera la longitud entre dos y otra la longitud entre dos menos 1, obtenemos los 
+                 * valores de esas posiciones para posteriormente sumarlas y dividirlas entre dos
+                */
+                if((valores.length % 2) != 0){
+                    x = valores.length - 1;
+                    x = x / 2;
+                    alert ("La mediana es: " +valores[x]);
+                }else if ((valores.length % 2) == 0){
+                    x = valores.length;
+                    x = x / 2;
+                    y = x - 1;
+                    mediana = (valores[x] + valores[y]) / 2;
+                    alert ("La mediana es: " +mediana);
+                }
+            
+        }
+            menu();
+        </script>
+    </head>
+    
+    <body>
+    </body>
+    
+</html>
