@@ -43,35 +43,33 @@
                 let mostrar = "Código        Nombre        Precio        Cantidad        Subtotal\n";
                 let total = 0;  // Inicializar total
 
-                for (let i = 0; i < cesta.length; i++) { 
-                    mostrar += cesta[i][0] + "                   " +
-                        cesta[i][1] + "                  " +
-                        cesta[i][2] + "                  " +
-                        cesta[i][3] + "                  " +
-                        cesta[i][4] + " €\n";
-                    total += cesta[i][4];  // Acumular subtotales
+                for (let i = 0; i < cesta.length; i++) {
+                    let producto = cesta[i];
+                    for (let prop in producto) {
+                        mostrar += producto[prop] + "                  ";  
+                    }
+                    mostrar += "\n";
+                    total += producto.subtotal;  // Sumamos el subtotal al total
                 }
-
-                // Mostrar el total al final
-                mostrar += "                                                                                                                                                            Total: " + total + " €";
+                mostrar += "                                                                                                                                                              Total: " + total+ " €";
                 alert(mostrar);
             }
         }
-
         function insertar(cesta, codigo) {
-            let producto = [];
+            let producto = new Object();
             let nombre = prompt("Introduzca el nombre del artículo:");
-            let cantidad = Number(prompt("Introduzca la cantidad del artículo:"));
             let precio = Number(prompt("Introduzca el precio del artículo:"));
+            let cantidad = Number(prompt("Introduzca la cantidad del artículo:"));
+
 
             let subtotal = precio * cantidad;
 
-            producto.push(codigo);
-            producto.push(nombre);
-            producto.push(precio);
-            producto.push(cantidad);
-            producto.push(subtotal);
-            
+            producto.codigo = codigo;
+            producto.nombre = nombre;
+            producto.precio = precio;
+            producto.cantidad = cantidad;
+            producto.subtotal = subtotal;
+
             cesta.push(producto);
 
             alert("Producto insertado correctamente.");
@@ -84,24 +82,25 @@
                 alert("La cesta está vacía, no se puede eliminar ningún artículo.");
             } else {
                 for (let i = 0; i < cesta.length; i++) {
-                    if (cesta[i][0] == codigo) {
+                    if (cesta[i].codigo == codigo) {
                         cesta.splice(i, 1);  // Eliminar el producto de la cesta
                         alert("Artículo eliminado correctamente.");
                     }
+
                 }
             }
         }
 
-            function vaciar(cesta) {
-                if (cesta.length == 0) {
-                    alert("La cesta ya está vacía.");
-                } else {
-                    cesta.splice(0, cesta.length);  // Vaciar la cesta
-                    alert("Cesta vaciada.");
-                }
+        function vaciar(cesta) {
+            if (cesta.length == 0) {
+                alert("La cesta ya está vacía.");
+            } else {
+                cesta.splice(0, cesta.length);  //Vaciar la cesta
+                alert("Cesta vaciada.");
             }
+        }
 
-            menu(); 
+        menu(); 
     </script>
 </head>
 
