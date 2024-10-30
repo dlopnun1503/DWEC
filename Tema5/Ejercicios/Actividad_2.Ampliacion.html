@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script>
+
+        class Producto {
+            #codigo;
+            #nombre;
+            #precio;
+            #cantidad;
+
+            constructor(codigo, nombre, precio, cantidad) {
+                this.#codigo = codigo;
+                this.#nombre = nombre;
+                this.#precio = precio;
+                this.#cantidad = cantidad;
+            }
+
+            // Métodos para acceder a los atributos privados
+            getCodigo() { return this.#codigo; }
+            getNombre() { return this.#nombre; }
+            getPrecio() { return this.#precio; }
+            getCantidad() { return this.#cantidad; }
+
+
+            getSubtotal() { return this.#precio * this.#cantidad; }
+        }
+
+        class Cesta {
+            #productos;
+            #codigoActual;
+            constructor() {
+                this.#productos = [];
+                this.#codigoActual = 0;
+            }
+
+            getProductos() { return this.#productos; }
+            getCodigoActual() { return this.#codigoActual; }
+
+
+            verCesta() {
+                if (this.#productos.length == 0) {
+                    alert("La cesta está vacía.");
+                } else {
+                    let mostrar = "Código        Nombre        Precio        Cantidad        Subtotal\n";
+                    let total = 0;
+
+                    for (let producto of this.#productos) {
+                        let subtotal = producto.getSubtotal();
+                        mostrar += producto.getCodigo() + "                  " +
+                            producto.getNombre() + "                  " +
+                            producto.getPrecio() + "                  " +
+                            producto.getCantidad() + "                   " +
+                            subtotal + "                  ";
+                        total += subtotal;
+                    }
+
+                    mostrar += "\n                                                                                                                                                           Total: " + total + " €";
+                    alert(mostrar);
+                }
+            }
+
+
+            insertarProducto(nombre, precio, cantidad) {
+                var producto = new Producto(this.#codigoActual, nombre, precio, cantidad);
+                this.#productos.push(producto);
+                this.#codigoActual++;
+                alert("Producto insertado correctamente");
+            }
+
+
+            borrarProducto(codigo) {
+                for (let i = 0; i < this.#productos.length; i++) {
+                    if (this.#productos[i].getCodigo() == codigo) {
+                        this.#productos.splice(i, 1);
+                        alert("Producto eliminado correctamente.");
+                    }
+                }
+            }
+
+
+            vaciarCesta() {
+                if (this.#productos.length == 0) {
+                    alert("La cesta ya está vacía.");
+                } else {
+                    this.#productos = [];
+                    alert("Cesta vaciada.");
+                }
+            }
+        }
+
+        class Menu{
+            #cesta;
+            constructor(cesta){
+                this.#cesta = cesta;
+            }
+            
+            bucle(){
+                let opcion;
+                do {
+                    opcion = Number(prompt("Elija una opción:\n1. Ver cesta\n2. Insertar producto\n3. Borrar producto\n4. Vaciar cesta\n5. Salir"));
+                    switch (opcion) {
+                        case 1:
+                            this.#cesta.verCesta();
+                            break;
+                        case 2:
+                            let nombre = prompt("Introduzca el nombre del artículo:");
+                            let precio = Number(prompt("Introduzca el precio del artículo:"));
+                            let cantidad = Number(prompt("Introduzca la cantidad del artículo:"));
+                            this.#cesta.insertarProducto(nombre, precio, cantidad);
+                            break;
+                        case 3:
+                            let codigo = prompt("Introduzca el código del artículo que deseas eliminar:");
+                            this.#cesta.borrarProducto(codigo);
+                            break;
+                        case 4:
+                            this.#cesta.vaciarCesta();
+                            break;
+                        case 5:
+                            alert("Programa finalizado");
+                            break;
+                        default:
+                            alert("Opción no válida");
+                    }
+                } while (opcion != 5);
+            }
+        }
+
+
+        var cesta1 = new Cesta();
+        var menu1 = new Menu(cesta1);
+        menu1.bucle();
+    </script>
+</head>
+
+<body>
+</body>
+
+</html>
