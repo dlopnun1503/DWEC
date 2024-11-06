@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script>
+        class validacionMat{
+            constructor() {
+                this.inicializarEventos();
+               // this.matricula = document.getElementById("matricula");
+                
+            }
+
+            validarMatricula() {
+                let matricula;
+                if (matricula.validity.patternMismatch) {
+                    matricula.setCustomValidity("Matrícula desconocida!");
+                } else {
+                    matricula.setCustomValidity("");
+                }
+            }
+
+            inicializarEventos() {
+               let matricula = document.getElementById("matricula");
+               matricula.addEventListener("keyup", this.validarMatricula.bind(this));
+            }
+        }
+      
+        window.onload =  new validacionMat();
+    </script>
+</head>
+
+<body>
+    <h1>SOLICITUD DE BAJA DE VEHÍCULOS</h1>
+
+    <style>
+        input:invalid {
+            border: 2px solid red;
+        }
+
+        input:valid {
+            border: 2px solid green;
+        }
+    </style>
+
+    <form id="form" action="Actividad1.html">
+    <div class="mb-3">
+        <label for="basic-url" class="form-label">DATOS DEL VEHÍCULO</label>
+        <div class="input-group">
+            <span class="input-group-text" id="basic-addon3">Matrícula</span>
+            <input type="text" class="form-control" id="matricula" name="matricula" pattern="^[0-9]{4}[A-Za-z]{3}"
+                required>
+
+            <span class="input-group-text" id="basic-addon3">Fecha Matriculación</span>
+            <input type="date" class="form-control" id="fechaMat" name="fechaMat" required>
+
+            <span class="input-group-text" id="basic-addon3">6 últimos dígitos (nº bastidor)</span>
+            <input type="text" class="form-control" id="bastidor" name="bastidor" pattern="^[0-9]{6}$" required>
+            <br>
+            <br>
+            <br>
+
+            <label for="basic-url" class="form-label">DATOS DEL TITULAR</label>
+            <br>
+            <div class="input-group">
+                <span class="input-group-text" id="basic-addon3">Nombre</span>
+                <input type="text" class="form-control" id="nombre" name="nombre" required>
+
+                <span class="input-group-text" id="basic-addon3">Apellidos</span>
+                <input type="text" class="form-control" id="apellidos" name="apellidos" required>
+
+                <span class="input-group-text" id="basic-addon3">Domicilio</span>
+                <input type="text" class="form-control" id="domicilio" name="domicilio" required>
+                <br>
+                <br>
+                <br>
+                <span class="input-group-text" id="dniSpan">Dni</span>
+                <input type="text" class="form-control" id="dni" name="dni" pattern="^[0-9]{8}[A-Za-z]$" required>
+
+                <span class="input-group-text" id="basic-addon3">Correo electrónico</span>
+                <input type="email" class="form-control" id="correo" name="correo" required>
+
+                <span class="input-group-text" id="basic-addon3">Teléfono</span>
+                <input type="text" class="form-control" id="telefono" name="telefono" pattern="^[0-9]{9}$" required>
+                <br>
+                <br>
+                <br>
+            </div>
+            <div class="input-group mb-3">
+                <label class="input-group-text" for="inputGroupSelect01">Tipo de Baja</label>
+                <select class="form-select" id="inputGroupSelect01" required>
+                    <option selected disabled>Seleccione una</option>
+                    <option value="1">Temporal</option>
+                    <option value="2">Definitiva</option>
+                </select>
+                <br>
+                <br>
+                <br>
+                <button id="bot" >Enviar</button>
+            </div>
+            </form>
+
+</body>
+
+</html>
