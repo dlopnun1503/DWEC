@@ -8,8 +8,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <script>
 
+    <script>
         class Producto {
             #id;
             #nombre;
@@ -21,255 +21,246 @@
                 this.#precio = precio;
                 this.#imagen = imagen;
             }
-
             getId() { return this.#id; }
             getNombre() { return this.#nombre; }
             getPrecio() { return this.#precio; }
             getImagen() { return this.#imagen; }
         }
 
-        class contProductos {
+        class ContProductos {
             #productos = [];
-            #cesta
+            #cesta;
 
             constructor(productos) {
-                this.#productos = productos;
-                this.#cesta = new Cesta(this.#productos);
-            }
+                this.#productos = [];
+                for (let i = 0; i < productos.length; i++) {
+                    var p = productos[i];
+                    var producto = new Producto(p[0], p[1], p[2], p[3]);
+                    this.#productos.push(producto);
+                }
 
-            getProductos() { return this.#productos; }
+                this.#cesta = new Cesta(this.#productos);
+                this.renderizarProductos();
+            }
 
             renderizarProductos() {
                 var contProductos = document.getElementById("contProductos");
+                contProductos.innerHTML = ""; // Limpiamos el contenedor por si se actualiza
 
                 this.#productos.forEach(producto => {
-                    /*
-                    Crear el div de la columna
-                    Le añadimos los atributos
-                    Hacemos lo mismo con los demas
-                    */
+                    // Crear el div de la columna para cada producto
                     var div = document.createElement("div");
-                    div.setAttribute("class", "col-md-4 mb-3");
+                    div.setAttribute("class", "col-md-4 mb-3");  // Columna que ocupa 1/3 de la fila
 
                     // Crear el contenedor del producto
                     var cardDiv = document.createElement("div");
                     cardDiv.setAttribute("class", "card");
 
-                    // imagen 
+                    // imagen
                     var img = document.createElement("img");
                     img.setAttribute("src", producto.getImagen());
                     img.setAttribute("class", "card-img-top");
                     img.setAttribute("alt", producto.getNombre());
+                    img.style.height = '200px';
+                    img.style.width = '100%';
+                    img.style.objectFit = 'cover';
 
                     // Crear el cuerpo del producto
                     var cardBody = document.createElement("div");
                     cardBody.setAttribute("class", "card-body");
 
-                    // título
-                    var title = document.createElement("h5");
-                    title.setAttribute("class", "card-title");
-                    title.textContent = producto.getNombre();
+                    // titulo
+                    var titulo = document.createElement("h5");
+                    titulo.setAttribute("class", "card-title");
+                    titulo.textContent = producto.getNombre();
 
-                    // precio 
-                    var price = document.createElement("p");
-                    price.setAttribute("class", "card-text");
-                    price.textContent = producto.getPrecio().toFixed(2) + "€";
+                    // precio
+                    var precio = document.createElement("p");
+                    precio.setAttribute("class", "card-text");
+                    precio.textContent = producto.getPrecio().toFixed(2) + "€";
 
-                    // botón de añadir
-                    var button = document.createElement("button");
-                    button.setAttribute("class", "btn btn-primary");
-                    button.setAttribute("data-id", producto.getId());
-                    button.textContent = "Añadir";
+                    // Cantidad
+                    var cantidad = document.createElement("input");
+                    cantidad.setAttribute("type", "number");
+                    cantidad.setAttribute("class", "form-control mb-2");
+                    cantidad.setAttribute("value", 1);
+                    cantidad.setAttribute("min", 1);
 
-                    cardBody.appendChild(title);
-                    cardBody.appendChild(price);
-                    cardBody.appendChild(button);
+                    //boton añadir
+                    var boton = document.createElement("button");
+                    boton.setAttribute("class", "btn btn-primary");
+                    boton.setAttribute("data-id", producto.getId());
+                    boton.textContent = "Añadir";
+                    boton.addEventListener("click", () => {
+                        this.#cesta.anadirProducto(producto.getId(), parseInt(cantidad.value));
+                    });
+
+                    // Añadimos los elementos al producto
+                    cardBody.appendChild(titulo);
+                    cardBody.appendChild(precio);
+                    cardBody.appendChild(cantidad);
+                    cardBody.appendChild(boton);
                     cardDiv.appendChild(img);
                     cardDiv.appendChild(cardBody);
                     div.appendChild(cardDiv);
+
+                    // Añadimos el div del producto al contenedor
                     contProductos.appendChild(div);
                 });
             }
-
         }
 
-
         class Cesta {
-            #productos;
-            #total;
+            #productos = [];
+            #total = 0;
+            #totalIva = 0;
+            #catalogo;
 
-            constructor() {
-                this.#productos = [];
-                this.#total = 0;
+            constructor(catalogo) {
+                this.#catalogo = catalogo;
             }
 
-            getProductos() { return this.#productos; }
-            getTotal() { return this.#total; }
+            anadirProducto(id, cantidad) {
+                /*
+                 Buscamos el primer producto que coincida el id,
+                 Si es >= 0 quiere decir que lo ha encontrado por lo que sumamos uno a la cantidad del producto,
+                 si no lo encuentra hacemos un push para añadirlo a la  cesta.
+                 */
+                var producto = this.#productos.findIndex(p => p.id == id);
 
-            anadirProducto(id) {
-                let productoExiste = false;
-
-                for (let i = 0; i < this.#productos.length; i++) {
-                    if (this.#productos[i].id == id) {
-                        this.#productos[i].cantidad++;
-                        productoExiste = true;
-                    }
+                if (producto >= 0) {
+                    this.#productos[producto].cantidad += cantidad;
+                } else {
+                    this.#productos.push({ id, cantidad });
                 }
 
-                if (!productoExiste) {
-                    this.#productos.push({ id, cantidad: 1 });
-                }
-
-                this.calcularTotal();
-                this.renderizarCesta();
+                this.actualizarCesta(); // Actualizamos la cesta
             }
-
 
             eliminarProducto(id) {
-                for (let i = 0; i < this.#productos.length; i++) {
-                    if (this.#productos[i].id === id) {
-                        if (this.#productos[i].cantidad > 1) {
-                            this.#productos[i].cantidad--;
-                        } else {
-                            this.#productos.splice(i, 1);
-                        }
+                /*
+                 Buscamos el primer producto que coincida el id,
+                 Si es >= 0 quiere decir que lo ha encontrado por lo que si el atributo cantidad perteneciente a ese producto es >= 1 lo eliminamos. 
+                 */
+                var producto = this.#productos.findIndex(p => p.id == id);
+                if (producto >= 0) {
+                    if (this.#productos[producto].cantidad >= 1) {
+                        this.#productos.splice(producto, 1);
                     }
                 }
-
-                this.calcularTotal();
-                this.renderizarCesta();
+                this.actualizarCesta();
             }
 
-
-            calcularTotal() {
-                var totalProductos = contProductos.getProductos();
-                this.#total = 0;
-
-                for (let i = 0; i < this.#productos.length; i++) {
-                    var producto = totalProductos.find(p => p.getId() === this.#productos[i].id);
-                    if (producto) {
-                        this.#total += producto.getPrecio() * this.#productos[i].cantidad;
-                    }
-                }
-            }
-
-
-
-            renderizarCesta() {
+            actualizarCesta() {
+                /*
+                Hacemos algo parecido al metodo renderizarProductos de la clase contProductos
+                Vamos creando filas y columnas con el createElement.
+                Con el textContent le damos un valor que serán la mayoría de veces atributos del objeto producto
+                Finalmente volvemos hacer un appendChild
+                */
                 var cesta = document.getElementById("cesta");
                 var total = document.getElementById("total");
-                var totalProductos = contProductos.getProductos();
+                cesta.innerHTML = ""; // Limpiamos el tbody para que no se añada el mismo producto por separado y en su lugar se sume al producto que ya se encuentra en la cesta
 
+                this.#total = 0;
 
-                for (var i = 0; i < this.#productos.length; i++) {
-                    var item = this.#productos[i];
-                    var producto = null;
-
-                    for (var j = 0; j < totalProductos.length; j++) {
-                        if (totalProductos[j].getId() === item.id) {
-                            producto = totalProductos[j];
-                        }
-                    }
-
+                this.#productos.forEach(item => {
+                    var producto = this.#catalogo.find(p => p.getId() == item.id);
                     if (producto) {
-                        var columna = document.createElement("tr");
+                        var fila = document.createElement("tr");
 
-                        // Nombre
-                        var nombre = document.createElement("td");
-                        nombre.textContent = producto.getNombre();
-                        columna.appendChild(nombre);
+                        var tdNombre = document.createElement("td");
+                        tdNombre.textContent = producto.getNombre();
 
-                        // Cantidad
-                        var cant = document.createElement("td");
-                        cant.textContent = item.cantidad;
-                        columna.appendChild(cant);
+                        var tdCantidad = document.createElement("td");
+                        tdCantidad.textContent = item.cantidad;
 
-                        // Precio 
-                        var precio = document.createElement("td");
-                        precio.textContent = producto.getPrecio().toFixed(2) + "€";
-                        columna.appendChild(precio);
+                        var tdPrecio = document.createElement("td");
+                        tdPrecio.textContent = producto.getPrecio().toFixed(2) + "€";
 
-                        // Subtotal
-                        var subtotal = document.createElement("td");
-                        subtotal.textContent = (producto.getPrecio() * item.cantidad).toFixed(2) + "€";
-                        columna.appendChild(subtotal);
+                        var tdSubtotal = document.createElement("td");
+                        var subtotal = producto.getPrecio() * item.cantidad;
+                        tdSubtotal.textContent = subtotal.toFixed(2) + "€";
 
-                        // Botón eliminar
-                        var eliminar = document.createElement("td");
-                        var botonEliminar = document.createElement("button");
-                        botonEliminar.setAttribute("class", "btn btn-danger btn-sm");
+                        var tdEliminar = document.createElement("td");
+                        var botonEliminar = document.createElement("boton");
                         botonEliminar.textContent = "X";
-                        botonEliminar.addEventListener("click", (function (id) {
-                            return () => this.eliminarProducto(id);
-                        }).call(this, item.id));
-                        eliminar.appendChild(botonEliminar);
-                        columna.appendChild(eliminar);
+                        botonEliminar.setAttribute("class", "btn btn-danger btn-sm");
+                        botonEliminar.addEventListener("click", () => this.eliminarProducto(item.id));
+                        tdEliminar.appendChild(botonEliminar);
 
-                        cesta.appendChild(columna);
+                        fila.appendChild(tdNombre);
+                        fila.appendChild(tdCantidad);
+                        fila.appendChild(tdPrecio);
+                        fila.appendChild(tdSubtotal);
+                        fila.appendChild(tdEliminar);
+
+                        cesta.appendChild(fila);
+
+                        this.#total += subtotal;
                     }
-                }
+                });
 
-                
-                total.textContent = (this.#total * 1.21).toFixed(2) + "€"; 
+                total.textContent = (this.#total);
+                totalIva.textContent = (this.#total * 1.21).toFixed(2) + "€";
             }
-
         }
 
         var productos = [
-            [1, "Bolso", 20, "https://www.bimbaylola.com/dw/image/v2/BDXG_PRD/on/demandware.static/-/Sites-byl-master-catalog/default/dw0e3c3c42/images/24/1/B/241BBBJ3R_10200_ML_1.jpg?sw=800"],
-            [2, "Movil", 120, "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYlWZV67m_6ngDkLg6SjTWjan8gcolumnam96eIw&s"],
-            [3, "Taza", 10, "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTfDKzTPJvrYn3oncfo4RkSIJXoPJ-i9Yw8jw&s"],
-            [4, "Zapatos", 50, "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQULme8iJDtddL1nhsV7Tn1Tv0ZQg5arV-Gwg&s"],
-            [5, "Vestido", 30, "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ6hhOyDZjwvrRETBjtvGzOusYC7bynLLO6GQ&s"],
-            [6, "Cámara", 100, "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSyCn820_AvwGYw_wH40AkUhN-LxyaJMyL5BA&s"]
-        ]
-
-        
-
+            [1, "Bolso", 20, "https://cdn.megacalzado.com/130343-superlarge_default/bolso-bronce-xti-184241.jpg"],
+            [2, "Movil", 120, "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSGoXh9NVAGiiBFH9aGIpvFMUbFZmdftoJdLA&s"],
+            [3, "Taza", 10, "https://www.shutterstock.com/image-photo/studio-photo-blue-mug-isolated-260nw-2340355509.jpg"],
+            [4, "Zapatos", 50, "https://promojob.es/wp-content/uploads/2023/09/PORTADA-2-300x300.jpg.webp"],
+            [5, "Vestido", 30, "https://phantom-telva.unidadeditorial.es/81dd39b8f1b092e2e664d76c7cb47ed4/crop/189x87/1827x1008/resize/828/f/jpg/assets/multimedia/imagenes/2024/01/02/17042121879646.jpg"],
+            [6, "Cámara", 100, "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtMGfxe8G2G2koUIGLG3iK_ouqoZtMGpQYGw&s"]
+        ];
 
         window.onload = function () {
-            new contProductos();
-        };
-
+            new ContProductos(productos);
+        }
     </script>
 </head>
 
 <body>
-    <div class="container">
 
-        <header>
-            <h1><i class="bi bi-shop"></i>De Todo</h1>
-            <h4>Ejemplo cálculo de cesta o carrito de la compra...</h4>
-        </header>
-
-        <!-- Sección de productos disponibles -->
-        <div id="contProductos" class="columna"></div>
-
-        <!-- Sección de la cesta de compras -->
-        <h2>Cesta</h2>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Cantidad</th>
-                    <th>Precio</th>
-                    <th>Subtotal</th>
-                    <th>Eliminar</th>
-                </tr>
-            </thead>
-            <tbody id="cesta"></tbody>
-            <tfoot>
-                <tr>
-                    <td colspan="3">Total + IVA (21%)</td>
-                    <td id="total"></td>
-                    <td></td>
-                </tr>
-            </tfoot>
-        </table>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-        crossorigin="anonymous"></script>
+    <body>
+        <div class="container">
+            <div class="jumbotron">
+                <h1><img src="https://img.icons8.com/color/48/000000/google-photos.png"> De todo ...</h1>
+                <h5>Ejemplo cálculo de cesta o carrito de la compra ... </h5>
+            </div>
+            <div class="row">
+                <!-- Productos -->
+                <div id="contProductos" class="col-sm-7 row">
+                    <!-- Se generan los productos dinamicamente -->
+                </div>
+                <!-- Cesta -->
+                <div class="col-sm-5">
+                    <h2> <img src="https://img.icons8.com/cute-clipart/64/000000/shopping-basket-success.png"> Cesta
+                    </h2>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th scope="col">Cod.</th>
+                                <th scope="col">Nombre</th>
+                                <th scope="col">Cantidad</th>
+                                <th scope="col">Precio(€)</th>
+                                <th scope="col">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cesta">
+                            <!-- se genera la cesta dinamicamente -->
+                        </tbody>
+                    </table>
+                    <hr>
+                    <!-- Precio total -->
+                    <p class="text-right">Total: <span id="total"></span> &euro;</p>
+                    <!-- Precio total Iva-->
+                    <p class="text-right">Total + IVA (21%):<strong> <span id="totalIva"></span></strong> &euro;</p>
+                </div>
+            </div>
+        </div>
+    </body>
 </body>
 
 </html>
