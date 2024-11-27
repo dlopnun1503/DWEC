@@ -167,40 +167,19 @@
                 this.#productos.forEach(item => {
                     var producto = this.#catalogo.find(p => p.getId() == item.id);
                     if (producto) {
-                        var fila = document.createElement("tr");
+                        var filaCesta = new FilaCesta(); 
+                        var resultadoFila = filaCesta.generarFila(
+                            item.id,
+                            producto.getNombre(),
+                            item.cantidad,
+                            producto.getPrecio(),
+                            this // Pasamos la referencia a la instancia de la cesta
+                        );
 
-                        var tdId = document.createElement("td");
-                        tdId.textContent = producto.getId();
-
-                        var tdNombre = document.createElement("td");
-                        tdNombre.textContent = producto.getNombre();
-
-                        var tdCantidad = document.createElement("td");
-                        tdCantidad.textContent = item.cantidad;
-
-                        var tdPrecio = document.createElement("td");
-                        tdPrecio.textContent = producto.getPrecio().toFixed(2) + "€";
-
-                        var tdSubtotal = document.createElement("td");
-                        var subtotal = producto.getPrecio() * item.cantidad;
-                        tdSubtotal.textContent = subtotal.toFixed(2) + "€";
-
-                        var tdEliminar = document.createElement("td");
-                        var botonEliminar = document.createElement("boton");
-                        botonEliminar.textContent = "X";
-                        botonEliminar.setAttribute("class", "btn btn-danger btn-sm");
-                        botonEliminar.addEventListener("click", () => this.eliminarProducto(item.id));
-                        tdEliminar.appendChild(botonEliminar);
-
-                        fila.appendChild(tdId);
-                        fila.appendChild(tdNombre);
-                        fila.appendChild(tdCantidad);
-                        fila.appendChild(tdPrecio);
-                        fila.appendChild(tdSubtotal);
-                        fila.appendChild(tdEliminar);
+                        var fila = resultadoFila.fila;
+                        var subtotal = resultadoFila.subtotal;
 
                         cesta.appendChild(fila);
-
                         this.#total += subtotal;
                     }
                 });
@@ -208,6 +187,58 @@
                 total.textContent = (this.#total);
                 totalIva.textContent = (this.#total * 1.21).toFixed(2) + "€";
             }
+        }
+
+        class FilaCesta {
+            #crearFila(id, nombre, cantidad, precio, cesta) {
+                var fila = document.createElement("tr");
+
+                // Columna Id
+                var tdId = document.createElement("td");
+                tdId.textContent = id;
+
+                // Columna Nombre
+                var tdNombre = document.createElement("td");
+                tdNombre.textContent = nombre;
+
+                // Columna Cantidad
+                var tdCantidad = document.createElement("td");
+                tdCantidad.textContent = cantidad;
+
+                // Columna Precio
+                var tdPrecio = document.createElement("td");
+                tdPrecio.textContent = precio.toFixed(2) + "€";
+
+                // Columna Subtotal
+                var tdSubtotal = document.createElement("td");
+                var subtotal = precio * cantidad;
+                tdSubtotal.textContent = subtotal.toFixed(2) + "€";
+
+                // Columna Eliminar
+                var tdEliminar = document.createElement("td");
+                var botonEliminar = document.createElement("button");
+                botonEliminar.textContent = "X";
+                botonEliminar.setAttribute("class", "btn btn-danger btn-sm");
+                botonEliminar.addEventListener("click", () => cesta.eliminarProducto(id)); // Usamos la referencia de la cesta
+                tdEliminar.appendChild(botonEliminar);
+
+                // Añadir columnas a la fila
+                fila.appendChild(tdId);
+                fila.appendChild(tdNombre);
+                fila.appendChild(tdCantidad);
+                fila.appendChild(tdPrecio);
+                fila.appendChild(tdSubtotal);
+                fila.appendChild(tdEliminar);
+
+                return { fila, subtotal };
+            }
+
+
+            // Método público para exponer la creación de filas
+            generarFila(id, nombre, cantidad, precio, cesta) {
+                return this.#crearFila(id, nombre, cantidad, precio, cesta);
+            }
+
         }
 
         var productos = [
