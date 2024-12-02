@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Actividad Tema 8</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <script>
+        class Producto {
+            #id;
+            #nombre;
+            #precio;
+            #imagen;
+            constructor(id, nombre, precio, imagen) {
+                this.#id = id;
+                this.#nombre = nombre;
+                this.#precio = precio;
+                this.#imagen = imagen;
+            }
+            getId() { return this.#id; }
+            getNombre() { return this.#nombre; }
+            getPrecio() { return this.#precio; }
+            getImagen() { return this.#imagen; }
+        }
+
+        class ContProductos {
+            #productos = [];
+            #cesta;
+
+            constructor(productos) {
+                this.#productos = [];
+                for (let i = 0; i < productos.length; i++) {
+                    var p = productos[i];
+                    var producto = new Producto(p[0], p[1], p[2], p[3]);
+                    this.#productos.push(producto);
+                }
+
+                this.#cesta = new Cesta(this.#productos);
+                this.renderizarProductos();
+            }
+
+            renderizarProductos() {
+                var contProductos = document.getElementById("contProductos");
+                contProductos.innerHTML = ""; // Limpiamos el contenedor por si se actualiza
+
+                this.#productos.forEach(producto => {
+                    // Crear el div de la columna para cada producto
+                    var div = document.createElement("div");
+                    div.setAttribute("class", "col-md-4 mb-3");  // Columna que ocupa 1/3 de la fila
+
+                    // Crear el contenedor del producto
+                    var cardDiv = document.createElement("div");
+                    cardDiv.setAttribute("class", "card");
+
+                    // imagen
+                    var img = document.createElement("img");
+                    img.setAttribute("src", producto.getImagen());
+                    img.setAttribute("class", "card-img-top");
+                    img.setAttribute("alt", producto.getNombre());
+                    img.style.height = '200px';
+                    img.style.width = '100%';
+                    img.style.objectFit = 'cover';
+
+                    // Crear el cuerpo del producto
+                    var cardBody = document.createElement("div");
+                    cardBody.setAttribute("class", "card-body");
+
+                    // titulo
+                    var titulo = document.createElement("h5");
+                    titulo.setAttribute("class", "card-title");
+                    titulo.textContent = producto.getNombre();
+
+                    // precio
+                    var precio = document.createElement("p");
+                    precio.setAttribute("class", "card-text");
+                    precio.textContent = producto.getPrecio().toFixed(2) + "€";
+
+                    // Cantidad
+                    var cantidad = document.createElement("input");
+                    cantidad.setAttribute("type", "number");
+                    cantidad.setAttribute("class", "form-control mb-2");
+                    cantidad.setAttribute("value", 1);
+                    cantidad.setAttribute("min", 1);
+
+                    //boton añadir
+                    var boton = document.createElement("button");
+                    boton.setAttribute("class", "btn btn-primary");
+                    boton.setAttribute("data-id", producto.getId());
+                    boton.textContent = "Añadir";
+                    boton.addEventListener("click", () => {
+                        this.#cesta.anadirProducto(producto.getId(), parseInt(cantidad.value));
+                    });
+
+                    // Añadimos los elementos al producto
+                    cardBody.appendChild(titulo);
+                    cardBody.appendChild(precio);
+                    cardBody.appendChild(cantidad);
+                    cardBody.appendChild(boton);
+                    cardDiv.appendChild(img);
+                    cardDiv.appendChild(cardBody);
+                    div.appendChild(cardDiv);
+
+                    // Añadimos el div del producto al contenedor
+                    contProductos.appendChild(div);
+                });
+            }
+        }
+
+        class Cesta {
+            #productos = [];
+            #total = 0;
+            #totalIva = 0;
+            #catalogo;
+
+            constructor(catalogo) {
+                this.#catalogo = catalogo;
+                this.cargarCesta();
+            }
+
+            anadirProducto(id, cantidad) {
+                /*
+                 Buscamos el primer producto que coincida el id,
+                 Si es >= 0 quiere decir que lo ha encontrado por lo que sumamos uno a la cantidad del producto,
+                 si no lo encuentra hacemos un push para añadirlo a la  cesta.
+                 */
+                var producto = this.#productos.findIndex(p => p.id == id);
+
+                if (producto >= 0) {
+                    this.#productos[producto].cantidad += cantidad;
+                } else {
+                    this.#productos.push({ id, cantidad });
+                }
+
+                this.actualizarCesta(); // Actualizar visualmente
+                this.guardarCesta();
+            }
+
+            eliminarProducto(id) {
+                /*
+                 Buscamos el primer producto que coincida el id,
+                 Si es >= 0 quiere decir que lo ha encontrado por lo que si el atributo cantidad perteneciente a ese producto es >= 1 lo eliminamos. 
+                 */
+                var producto = this.#productos.findIndex(p => p.id == id);
+                if (producto >= 0) {
+                    if (this.#productos[producto].cantidad >= 1) {
+                        this.#productos.splice(producto, 1);
+                    }
+                }
+                this.actualizarCesta();
+                this.guardarCesta();
+            }
+
+            actualizarCesta() {
+                /*
+                Hacemos algo parecido al metodo renderizarProductos de la clase contProductos
+                Vamos creando filas y columnas con el createElement.
+                Con el textContent le damos un valor que serán la mayoría de veces atributos del objeto producto
+                Finalmente volvemos hacer un appendChild
+                */
+                var cesta = document.getElementById("cesta");
+                var total = document.getElementById("total");
+                cesta.innerHTML = ""; // Limpiamos el tbody para que no se añada el mismo producto por separado y en su lugar se sume al producto que ya se encuentra en la cesta
+
+                this.#total = 0;
+
+                this.#productos.forEach(item => {
+                    var producto = this.#catalogo.find(p => p.getId() == item.id);
+                    if (producto) {
+                        var fila = document.createElement("tr");
+
+                        var tdId = document.createElement("td");
+                        tdId.textContent = producto.getId();
+
+                        var tdNombre = document.createElement("td");
+                        tdNombre.textContent = producto.getNombre();
+
+                        var tdCantidad = document.createElement("td");
+                        tdCantidad.textContent = item.cantidad;
+
+                        var tdPrecio = document.createElement("td");
+                        tdPrecio.textContent = producto.getPrecio().toFixed(2) + "€";
+
+                        var tdSubtotal = document.createElement("td");
+                        var subtotal = producto.getPrecio() * item.cantidad;
+                        tdSubtotal.textContent = subtotal.toFixed(2) + "€";
+
+                        var tdEliminar = document.createElement("td");
+                        var botonEliminar = document.createElement("boton");
+                        botonEliminar.textContent = "X";
+                        botonEliminar.setAttribute("class", "btn btn-danger btn-sm");
+                        botonEliminar.addEventListener("click", () => this.eliminarProducto(item.id));
+                        tdEliminar.appendChild(botonEliminar);
+
+                        fila.appendChild(tdId);
+                        fila.appendChild(tdNombre);
+                        fila.appendChild(tdCantidad);
+                        fila.appendChild(tdPrecio);
+                        fila.appendChild(tdSubtotal);
+                        fila.appendChild(tdEliminar);
+
+                        cesta.appendChild(fila);
+
+                        this.#total += subtotal;
+                    }
+                });
+
+                total.textContent = (this.#total);
+                totalIva.textContent = (this.#total * 1.21).toFixed(2) + "€";
+            }
+
+            guardarCesta() {
+                var productosJson = JSON.stringify(this.#productos);
+                localStorage.setItem("cesta", productosJson);
+            }
+
+            cargarCesta() {
+                var datos = localStorage.getItem("cesta");
+                this.#productos = JSON.parse(datos);
+                this.actualizarCesta();
+
+            }
+        }
+
+        var productos = [
+            [1, "Bolso", 20, "https://cdn.megacalzado.com/130343-superlarge_default/bolso-bronce-xti-184241.jpg"],
+            [2, "Movil", 120, "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSGoXh9NVAGiiBFH9aGIpvFMUbFZmdftoJdLA&s"],
+            [3, "Taza", 10, "https://www.shutterstock.com/image-photo/studio-photo-blue-mug-isolated-260nw-2340355509.jpg"],
+            [4, "Zapatos", 50, "https://promojob.es/wp-content/uploads/2023/09/PORTADA-2-300x300.jpg.webp"],
+            [5, "Vestido", 30, "https://phantom-telva.unidadeditorial.es/81dd39b8f1b092e2e664d76c7cb47ed4/crop/189x87/1827x1008/resize/828/f/jpg/assets/multimedia/imagenes/2024/01/02/17042121879646.jpg"],
+            [6, "Cámara", 100, "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtMGfxe8G2G2koUIGLG3iK_ouqoZtMGpQYGw&s"]
+        ];
+
+
+
+        window.onload = function () {
+            new ContProductos(productos);
+        }
+    </script>
+</head>
+
+<body>
+
+    <body>
+        <div class="container">
+            <div class="jumbotron">
+                <h1><img src="https://img.icons8.com/color/48/000000/google-photos.png"> De todo ...</h1>
+                <h5>Ejemplo cálculo de cesta o carrito de la compra ... </h5>
+            </div>
+            <div class="row">
+                <!-- Productos -->
+                <div id="contProductos" class="col-sm-7 row">
+                    <!-- Se generan los productos dinamicamente -->
+                </div>
+                <!-- Cesta -->
+                <div class="col-sm-5">
+                    <h2> <img src="https://img.icons8.com/cute-clipart/64/000000/shopping-basket-success.png"> Cesta
+                    </h2>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th scope="col">Cod.</th>
+                                <th scope="col">Nombre</th>
+                                <th scope="col">Cantidad</th>
+                                <th scope="col">Precio(€)</th>
+                                <th scope="col">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cesta">
+                            <!-- se genera la cesta dinamicamente -->
+                        </tbody>
+                    </table>
+                    <hr>
+                    <!-- Precio total -->
+                    <p class="text-right">Total: <span id="total"></span> &euro;</p>
+                    <!-- Precio total Iva-->
+                    <p class="text-right">Total + IVA (21%):<strong> <span id="totalIva"></span></strong> &euro;</p>
+                </div>
+            </div>
+        </div>
+    </body>
+</body>
+
+</html>
