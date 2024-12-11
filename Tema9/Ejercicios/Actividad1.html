@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Actividad Tema 9</title>
+</head>
+<body>
+    <!-- Select para elegir un nombre -->
+    <select id="nombreSelect" onchange="funAjax(this.value, mostrarDatos)">
+        <option value="">Seleccione un nombre</option>
+    </select>
+
+    <!-- Div para mostrar los datos -->
+    <div id="datos" style="margin-top: 20px;"></div>
+
+    <script>
+        // Función genérica para realizar una petición AJAX
+        function funAjax(nombre, fun) {
+            if (!nombre) return; // Si no hay nombre, no hace nada
+
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    fun(this); // Llama a la función de callback
+                }
+            };
+            // URL con el parámetro 'nombre'
+            xhttp.open("GET", `datos.php?nombre=${nombre}`, true);
+            xhttp.send();
+        }
+
+        // Función para mostrar los datos recibidos del servidor (JSON de Objeto)
+        function mostrarDatos(xhttp) {
+            let datos = JSON.parse(xhttp.responseText); // Convertir JSON a objeto
+            let div = document.getElementById("datos");
+            div.innerHTML = ''; // Limpiar contenido previo
+
+            if (datos.error) {
+                div.textContent = datos.error; // Mostrar mensaje de error
+            } else {
+                // Mostrar los datos en formato tabla
+                let table = `
+                    <table border="1">
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Apellidos</th>
+                            <th>Ciudad</th>
+                        </tr>
+                        <tr>
+                            <td>${datos.id}</td>
+                            <td>${datos.nombre}</td>
+                            <td>${datos.apellidos}</td>
+                            <td>${datos.ciudad}</td>
+                        </tr>
+                    </table>`;
+                div.innerHTML = table;
+            }
+        }
+
+        // Función para cargar los nombres al iniciar la página (JSON de Array)
+        function cargarNombres() {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    let nombres = JSON.parse(this.responseText); // JSON de array
+                    let select = document.getElementById("nombreSelect");
+
+                    // Agregar los nombres al select
+                    nombres.forEach(item => {
+                        let option = document.createElement("option");
+                        option.value = item; // El nombre será el valor enviado
+                        option.textContent = item; // El nombre que se muestra
+                        select.appendChild(option);
+                    });
+                }
+            };
+            // Llamada al PHP para obtener la lista de nombres
+            xhttp.open("GET", "datos.php", true);
+            xhttp.send();
+        }
+
+        // Cargar nombres al cargar la página
+        window.onload = cargarNombres;
+    </script>
+</body>
+</html>

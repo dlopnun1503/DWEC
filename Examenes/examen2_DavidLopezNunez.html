@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+        .centra {
+            border: 1px solid grey;
+            text-align: center;
+        }
+
+        .borde {
+            border: 1px solid grey;
+        }
+    </style>
+
+</head>
+
+<body>
+    <script>
+
+        // Cadena 'bdDallo', contiene todos los costes en euros (materiales, mano de obra, etc...)
+        //  para realizar el escandallo de una serie de carteras de piel recibido desde una BBDD.
+
+        var bdDallo = `[{ "id": 1,
+                        "nombre": "cartera piel vacuno negra",
+                        "costes":{ "piel": 5,
+                                   "hilo": 0.80,
+                                   "rebaje": 1,
+                                   "pegamento": 0.50,
+                                   "pintura": 0.45,
+                                   "broches": 0.90,
+                                   "cosido": 1,
+                                   "fabricación": 15,
+                                   "embasado": 1}                
+                   },
+                   {    "id": 2,
+                        "nombre": "cartera piel vacuno azul",
+                        "costes":{ "piel": 6,
+                                   "hilo": 0.90,
+                                   "rebaje": 1.50,
+                                   "pegamento": 0.70,
+                                   "pintura": 0.50,
+                                   "broches": 0.80,
+                                   "cosido": 1.50,
+                                   "fabricación": 16,
+                                   "embasado": 1.20}                
+                   },
+                   {    "id": 3,
+                        "nombre": "cartera piel coco",
+                        "costes":{ "piel": 25,
+                                   "hilo": 1,
+                                   "rebaje": 1,
+                                   "pegamento": 0.70,
+                                   "pintura": 0.80,
+                                   "broches": 1,
+                                   "cosido": 3,
+                                   "fabricación": 20,
+                                   "embasado": 5}               
+                   }]`
+
+
+        class Secc {
+            constructor() {
+            }
+
+            cabecera() {
+                var tr = document.createElement('tr');
+                tr.innerHTML = `
+            <th class="centra">ID</th>
+            <th class="centra">NOMBRE</th>
+            <th class="centra">COSTE (€)</th>`;
+                return tr;
+            }
+
+            modeloCartera(id, nombre, coste) {
+                var tr = document.createElement('tr');
+                tr.innerHTML = `
+            <td class="centra">${id}</td>
+            <td class="centra">${nombre}</td>
+            <td class="centra">${coste.toFixed(2)}</td>`;
+                return tr;
+            }
+
+            coste(nombreCoste, coste) {
+                var tr = document.createElement('tr');
+                tr.innerHTML = `
+            <td class="centra"></td>
+            <td class="centra">${nombreCoste}</td>
+            <td class="centra">${coste.toFixed(2)}</td>`;
+                return tr;
+            }
+
+            filaTotal(total) {
+                var tr = document.createElement('tr');
+                tr.innerHTML = `
+            <td colspan="2" class="centra"><strong>Total</strong></td>
+            <td class="centra"><strong>${total.toFixed(2)}</strong></td>`;
+                return tr;
+            }
+        }
+
+        class Tabla {
+            constructor(json) {
+                this.datos = JSON.parse(json);
+                this.seccion = new Secc();
+            }
+
+            renderizar(contenedorId) {
+                
+
+                this.tabla.appendChild(seccion.cabecera);
+
+                this.datos.forEach(cartera => {
+
+                    var div = document.createElement("div");
+                    div.setAttribute("class", "card");
+
+                    var id = document.createElement("p");
+                    id.setAttribute("class", "card-text");
+                    id.textContent = bdDallo.id;
+
+                    var nombre = document.createElement("p");
+                    nombre.setAttribute("class", "card-text");
+                    nombre.textContent = bdDallo.nombre;
+
+                    var nombre = document.createElement("p");
+                    nombre.setAttribute("class", "card-text");
+                    nombre.textContent = bdDallo.nombre;
+
+                    var nombreCoste = document.createElement("p");
+                    nombreCoste.setAttribute("class", "card-text");
+                    nombreCoste.textContent = bdDallo.nombreCoste; 
+
+                    var coste = document.createElement("p");
+                    coste.setAttribute("class", "card-text");
+                    coste.textContent = bdDallo.coste;
+
+
+                    this.tabla.appendChild(seccion.modeloCartera(id, nombre, coste));
+
+
+                    for (var coste in costes) {
+                        this.tabla.appendChild(seccion.coste(nombreCoste, coste));
+                    }
+
+                    for (var coste in costes) {
+                        this.total += costes[coste];
+                    }
+
+                });
+
+                this.tabla.appendChild(seccion.filaTotal(this.total));
+                div.appendChild(this.tabla);
+            }
+        }
+
+        var tabla = new Tabla(bdDallo);
+        document.body.appendChild(tabla);
+        
+    </script>
+</body>
+
+</html>
