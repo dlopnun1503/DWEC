@@ -1,46 +1,63 @@
 <?php
 
 $host = 'localhost';
-$dbname = 'tema10';
+$dbname = 'tema9';
 $username = 'root';
 $password = '';
+$charset = 'utf8mb4';
+$collection = 'utf8mb4_unicode_ci';
 
 header("access-control-allow-origin: *");
 
+$pdo;
+
+
 try {
-    // Conexión a la base de datos
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
 
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    // nombre fuente de datos
+    $dsn = "mysql:host=" . $host . ";dbname=" . $dbname;
 
-    if (isset($_GET['nombre'])) {
-        // Si se pasa el parámetro 'nombre', devolver un JSON de objeto
-        $nombre = $_GET['nombre'];
-        $stmt = $pdo->prepare("SELECT * FROM datos WHERE nombre = :nombre");
-        $stmt->bindParam(':nombre', $nombre);
-        $stmt->execute();
-        $resultado = $stmt->fetch(PDO::FETCH_ASSOC); 
 
-        if ($resultado) {
-            echo json_encode($resultado, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT); // Devolver JSON de objeto
-        } else {
-            echo json_encode(["error" => "No se encontraron datos"]); // Si no hay datos
-        }
+    // array de opciones para la clase pdo
+    $options = [
+
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_PERSISTENT =>  false,
+        PDO::ATTR_EMULATE_PREPARES =>  false,
+        PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES " . $charset . " COLLATE " . $collection
+
+    ];
+
+    // realizo la conexión
+    $pdo = new PDO($dsn, $username, $password, $options);
+
+    $id = isset($_GET['id']) ? $_GET['id'] : null;
+
+    if (!$id) {
+        $sql = 'SELECT id, nombre FROM datos';
     } else {
-        // Si no se pasa parámetro, devolver un JSON de array con los nombres
-        $stmt = $pdo->query("SELECT DISTINCT nombre FROM datos");
-        $nombres = $stmt->fetchAll(PDO::FETCH_COLUMN); 
-
-        if ($nombres) {
-            echo json_encode($nombres, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT); // Devolver JSON de array
-        } else {
-            echo json_encode(["error" => "No hay nombres disponibles"]); // Si no hay nombres
-        }
+        $sql = 'SELECT * FROM datos WHERE id = :id';
     }
+
+    $stmt = $pdo->prepare($sql);
+
+    if ($id != null) {
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+    }
+
+    $stmt->setFetchMode(PDO::FETCH_OBJ);
+
+    // ejectuto
+    $stmt->execute();
+
+    $results = $stmt->fetchAll();
+
+    // Envío los resultados como JSON
+    echo json_encode($results);
+
 } catch (PDOException $e) {
-    echo json_encode(["error" => $e->getMessage()]); // Manejo de errores
+
+    // Manejo de errores
+    echo json_encode(['error' => $e->getMessage()]);
+    exit();
 }
-
-var_dump($nombres);
-
-
