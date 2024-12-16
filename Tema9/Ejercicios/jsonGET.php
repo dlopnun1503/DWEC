@@ -7,7 +7,9 @@ $password = '';
 $charset = 'utf8mb4';
 $collection = 'utf8mb4_unicode_ci';
 
-header("access-control-allow-origin: *");
+header("Access-Control-Allow-Origin: *");
+header("Content-Type: application/json; charset=UTF-8");
+
 
 $pdo;
 
@@ -61,3 +63,5 @@ try {
     echo json_encode(['error' => $e->getMessage()]);
     exit();
 }
+
+?>

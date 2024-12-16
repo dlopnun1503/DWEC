@@ -1,91 +1,126 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Actividad Tema 10</title>
+    <title>Actividad Tema 9</title>
 </head>
 
 <body>
-    <select id="nombreSelect" onchange="selectNombre()">
-        <option value="">Seleccione un nombre</option>
-    </select>
-    <div id="datos"></div>
+
+    <!-- Div donde se insertará el select dinámicamente -->
+    <div id="selectContainer"></div>
+
+    <br>
+    <!-- Tabla donde aparecerán los datos -->
+    <div id="datos">
+        La tabla se cargará aquí...
+    </div>
 
     <script>
-        // Realizar solicitud AJAX
+        
         function funAjax(url, callback) {
             var xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function () {
-                if (this.readyState === 4 && this.status === 200) {
-                    callback(this);
+                if (this.readyState === 4) {
+                    if (this.status === 200) {
+                        callback(this);
+                    } else {
+                        console.error("Error en la petición AJAX");
+                    }
                 }
             };
             xhttp.open("GET", url, true);
             xhttp.send();
         }
 
-        // Llenar el select con los nombres
-        function listaNombres() {
+        /**
+         * Carga la lista de nombres en el selector, y crea el select dinámicamente
+         */
+        function selectNombre() {
+            // Crear el elemento <select> dinámicamente
+            var selectContainer = document.getElementById("selectContainer");
+            var select = document.createElement("select");
+            select.id = "nombreSelect";
+            select.onchange = function() {
+                mostrarDatosUsuario(this.value);
+            };
+
+            // Insertar un option de "Seleccione un nombre"
+            var optionDefault = document.createElement("option");
+            optionDefault.value = "";
+            optionDefault.textContent = "Seleccione un nombre";
+            select.appendChild(optionDefault);
+
+            // Insertar el select creado en el div del contenedor
+            selectContainer.appendChild(select);
+
+            // Obtener los nombres con AJAX
             funAjax("jsonGET.php", function (xhttp) {
-                let nombres = JSON.parse(xhttp.responseText); // JSON de array
-                let select = document.getElementById("nombreSelect");
+                try {
+                    let nombres = JSON.parse(xhttp.responseText); // Procesar el JSON
 
-                // Limpiar opciones anteriores
-                select.innerHTML = `<option value="">Seleccione un nombre</option>`;
-
-                // Agregar nombres al select
-                nombres.forEach(item => {
-                    let option = document.createElement("option");
-                    option.value = item.id; // ID del usuario
-                    option.textContent = item.nombre; // Nombre visible
-                    select.appendChild(option);
-                });
+                    // Agregar los nombres al select dinámicamente
+                    nombres.forEach(item => {
+                        let option = document.createElement("option");
+                        option.value = item.id;       // ID como valor
+                        option.textContent = item.nombre; // Nombre como texto visible
+                        select.appendChild(option);
+                    });
+                } catch (error) {
+                    console.error("Error procesando JSON:", error);
+                    document.getElementById("datos").innerText = "Error al cargar los nombres.";
+                }
             });
         }
 
-        // Manejar el cambio de selección
-        function selectNombre() {
-            var id = document.getElementById("nombreSelect").value;
-            if (id) {
-                // Obtener datos del usuario seleccionado
+        /**
+         * Cargar los datos de la persona seleccionada
+         */
+        function mostrarDatosUsuario(id) {
+            if (id) { // Si hay una selección
                 funAjax(`jsonGET.php?id=${id}`, function (xhttp) {
-                    let obj = JSON.parse(xhttp.responseText);
-
-                    // Mostrar los datos en la tabla
-                    document.getElementById("datos").innerHTML = `
-                        <div class="table-responsive"> 
-                            <table class="table">
-                                <thead>
+                    try {
+                        let obj = JSON.parse(xhttp.responseText); // Procesar JSON
+                        if (obj.length > 0) { // Validar si hay datos
+                            let usuario = obj[0];
+                            // Mostrar los datos en tabla
+                            document.getElementById("datos").innerHTML = `
+                                <table border="1">
                                     <tr>
-                                        <th>Id</th>
-                                        <td>${obj.id}</td>
+                                        <th>ID</th>
+                                        <td>${usuario.id}</td>
                                     </tr>
                                     <tr>
                                         <th>Nombre</th>
-                                        <td>${obj.nombre}</td>
+                                        <td>${usuario.nombre}</td>
                                     </tr>
                                     <tr>
                                         <th>Apellidos</th>
-                                        <td>${obj.apellidos}</td>
+                                        <td>${usuario.apellidos}</td>
                                     </tr>
                                     <tr>
                                         <th>Ciudad</th>
-                                        <td>${obj.ciudad}</td>
+                                        <td>${usuario.ciudad}</td>
                                     </tr>
-                                </thead>
-                            </table>
-                        </div>`;
+                                </table>`;
+                        } else {
+                            document.getElementById("datos").innerText = "No se encontraron datos.";
+                        }
+                    } catch (error) {
+                        console.error("Error en los datos del usuario:", error);
+                        document.getElementById("datos").innerText = "Error al mostrar los datos.";
+                    }
                 });
             } else {
-                // Limpiar la tabla si no hay selección
+                // Si no hay selección, limpiar la tabla
                 document.getElementById("datos").innerHTML = "";
             }
         }
 
         // Inicializar la lista de nombres al cargar la página
-        window.onload = listaNombres;
+        window.onload = selectNombre;
     </script>
 </body>
 

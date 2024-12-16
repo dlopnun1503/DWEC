@@ -1,0 +1,118 @@
+<script>
+function funAjax(url, callback) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function () {
+        if (this.readyState === 4) {
+            if (this.status === 200) {
+                callback(this);
+            } else {
+                console.error("Error en la petición AJAX");
+            }
+        }
+    };
+    xhttp.open("GET", url, true);
+    xhttp.send();
+}
+
+/*
+url: Es la URL del archivo PHP o servicio desde donde se obtiene la información (en este caso, jsonGET.php).
+
+callback: Es una función que se ejecutará una vez que la respuesta de la solicitud sea exitosa. Esta función maneja el resultado de la petición.
+
+XMLHttpRequest: Permite hacer solicitudes asíncronas (AJAX) para obtener o enviar datos al servidor sin recargar la página.
+
+La función también maneja la respuesta para verificar que la petición fue exitosa (status === 200) y ejecuta el callback para procesar los datos.
+*/
+
+function listaNombres() {
+    funAjax("jsonGET.php", function (xhttp) {
+        try {
+            let nombres = JSON.parse(xhttp.responseText); // Procesar el JSON
+
+            // Referencia al selector
+            let select = document.getElementById("nombreSelect");
+
+            // Limpiar opciones anteriores
+            select.innerHTML = `<option value="">Seleccione un nombre</option>`;
+
+            // Agregar nombres al select
+            nombres.forEach(item => {
+                let option = document.createElement("option");
+                option.value = item.id;       // ID como valor
+                option.textContent = item.nombre; // Nombre como texto visible
+                select.appendChild(option);
+            });
+        } catch (error) {
+            console.error("Error procesando JSON:", error);
+            document.getElementById("datos").innerText = "Error al cargar los nombres.";
+        }
+    });
+}
+
+/*
+Esta función se encarga de llenar el menú desplegable (<select>) con los nombres obtenidos del servidor.
+
+Se hace una solicitud AJAX con jsonGET.php para obtener un JSON que contiene una lista de nombres.
+
+JSON.parse(xhttp.responseText): Convierte la respuesta JSON de la solicitud en un objeto JavaScript.
+
+nombres.forEach(...): Para cada item en el array de nombres, se crea una opción (<option>) que se añade al menú (<select>).
+
+Si ocurre algún error (por ejemplo, si el JSON es inválido), muestra un mensaje de error en el contenedor <div id="datos"></div>.
+*/
+
+function selectNombre() {
+    var id = document.getElementById("nombreSelect").value;
+
+    if (id) { // Si hay una selección
+        funAjax(`jsonGET.php?id=${id}`, function (xhttp) {
+            try {
+                let obj = JSON.parse(xhttp.responseText); // Procesar JSON
+                if (obj.length > 0) { // Validar si hay datos
+                    let usuario = obj[0];
+                    // Mostrar los datos en tabla
+                    document.getElementById("datos").innerHTML = `
+                        <table border="1">
+                            <tr>
+                                <th>ID</th>
+                                <td>${usuario.id}</td>
+                            </tr>
+                            <tr>
+                                <th>Nombre</th>
+                                <td>${usuario.nombre}</td>
+                            </tr>
+                            <tr>
+                                <th>Apellidos</th>
+                                <td>${usuario.apellidos}</td>
+                            </tr>
+                            <tr>
+                                <th>Ciudad</th>
+                                <td>${usuario.ciudad}</td>
+                            </tr>
+                        </table>`;
+                } else {
+                    document.getElementById("datos").innerText = "No se encontraron datos.";
+                }
+            } catch (error) {
+                console.error("Error en los datos del usuario:", error);
+                document.getElementById("datos").innerText = "Error al mostrar los datos.";
+            }
+        });
+    } else {
+        // Si no hay selección, limpiar la tabla
+        document.getElementById("datos").innerHTML = "";
+    }
+}
+
+/*
+Esta función se ejecuta cuando el usuario selecciona un nombre en el menú desplegable.
+
+var id = document.getElementById("nombreSelect").value;: Obtiene el valor de la opción seleccionada en el <select>, que es el ID de la persona.
+
+Si un ID válido es seleccionado, realiza otra solicitud AJAX a jsonGET.php?id=<id>, pasando este ID como parámetro en la URL.
+
+Luego, la respuesta del servidor es procesada en formato JSON, y si contiene datos, estos se muestran en una tabla con la información del usuario (ID, nombre, apellidos y ciudad).
+
+Si no hay datos, o hay algún error procesando los datos, se muestra un mensaje correspondiente.
+*/
+</script>
