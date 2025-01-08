@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Examen3_DavidLopezNunez</title>
+
+    <script>
+        class Pregunta {
+            constructor(enunciado, respuesta) {
+                this.enunciado = enunciado;
+                this.respuesta = respuesta;
+            }
+
+            pregHTML() {
+
+                var contPregunta = document.createElement("div");
+
+                // enunciado de la pregunta
+                var enunciadoPreg = document.createElement("h3");
+                enunciadoPreg.textContent = this.enunciado;
+                contPregunta.appendChild(enunciadoPreg);
+
+                // botones de respuesta
+                var posiblesResp = ["a", "b", "c"];
+                posiblesResp.forEach(opcion => {
+                    var label = document.createElement("label");
+                    label.textContent = opcion.toUpperCase();
+
+                    var input = document.createElement("input");
+                    input.type = "radio";
+                    input.name = this.enunciado;
+                    input.value = opcion;
+
+                    // si la opcion es correcta la ponemos como true 
+                    if (opcion === this.respuesta) {
+                        input.checked = true;
+                    }
+
+                    label.appendChild(input);
+                    contPregunta.appendChild(label);
+                });
+
+                // llamamos al método privado #colorChange 
+                enunciadoPreg.addEventListener("click", this.#colorChange.bind(enunciadoPreg));
+
+                return contPregunta;
+            }
+
+            #colorChange() {
+                if (this.style.color === "blue") {
+                    this.style.color = "";
+                } else {
+                    this.style.color = "blue";
+                }
+            }
+        }
+
+        class Main {
+            constructor() {
+                // llamamos al metodo privado #readJSON() 
+                this.#readJSON();
+            }
+
+            #readJSON() {
+            
+                var xhttp = new XMLHttpRequest();
+
+                xhttp.onreadystatechange = () => {
+                    if (xhttp.readyState === 4 && xhttp.status === 200) {
+
+                        // covertimos el json en un objeto js
+                        var preguntasJSON = JSON.parse(xhttp.responseText);
+
+                        /*
+                        hacemos un bcle para mostrar el enunciado y respuesta de cada pregunta
+                        creamos un objeto de la clase pregunta y le pasamos el enunciado y la respuesta para cada una
+                         */
+                        preguntasJSON.forEach(preguntas => {
+                            var pregunta = new Pregunta(
+                                preguntas.enunciado,
+                                preguntas.respuesta
+                            );    
+                            document.body.appendChild(pregunta.pregHTML());
+                        });
+                    }
+                };
+
+                
+                xhttp.open("GET", "Examen3_1Eva_24_25.json", true); // Le pasamos el metodo y la url del archivo json. El true quiere decir que es asincrono
+                xhttp.send();
+            }
+        }
+
+        
+        new Main();
+
+    </script>
+</head>
+
+<body>
+</body>
+
+</html>
