@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Actividad Tema 10</title>
+</head>
+
+<body>
+
+    <!-- Div donde se insertará el select dinámicamente -->
+    <div id="selectContainer"></div>
+
+    <br>
+    <!-- Tabla donde aparecerán los datos -->
+    <div id="datos">
+        La tabla se cargará aquí...
+    </div>
+
+    <script>
+
+        /*
+                     // Realizar una solicitud con fetch usando promesas (.then)
+                     
+                     function funFetch(url, callback) {
+                         fetch(url)
+                             .then(response => {
+                                 if (!response.ok) {
+                                     throw new Error("Error en la respuesta: " + response.status);
+                                 }
+                                 return response.json();
+                             })
+                             .then(data => callback(data))
+                             .catch(error => {
+                                 console.error("Error en la petición con fetch:", error);
+                             });
+                     }
+             
+                     //Carga la lista de nombres y crea el select 
+             
+                     function selectNombre() {
+                         // Crear el select
+                         var selectContainer = document.getElementById("selectContainer");
+                         var select = document.createElement("select");
+                         select.id = "selectNombres";
+                         select.onchange = function() {
+                             mostrarDatosUsuario(this.value);
+                         };
+             
+                         // Insertar un option 
+                         var optionDefault = document.createElement("option");
+                         optionDefault.value = "";
+                         optionDefault.textContent = "Seleccione un nombre";
+                         select.appendChild(optionDefault);
+             
+                         // Insertar el select 
+                         selectContainer.appendChild(select);
+             
+                         // Obtener los nombres 
+                         funFetch("jsonGET.php", nombres => {
+                             try {
+                                 // Agregar los nombres al select dinámicamente
+                                 nombres.forEach(item => {
+                                     let option = document.createElement("option");
+                                     option.value = item.id;       
+                                     option.textContent = item.nombre; 
+                                     select.appendChild(option);
+                                 });
+                             } catch (error) {
+                                 console.error("Error procesando JSON:", error);
+                                 document.getElementById("datos").innerText = "Error al cargar los nombres.";
+                             }
+                         });
+                     }
+             
+                     // Cargar los datos de la persona seleccionada
+                 
+                     function mostrarDatosUsuario(id) {
+                         if (id) { 
+                             funFetch(`jsonGET.php?id=${id}`, obj => {
+                                 try {
+                                     if (obj.length > 0) { 
+                                         let usuario = obj[0];
+                                         // Mostrar los datos en tabla
+                                         document.getElementById("datos").innerHTML = `
+                                             <table border="1">
+                                                 <tr>
+                                                     <th>ID</th>
+                                                     <td>${usuario.id}</td>
+                                                 </tr>
+                                                 <tr>
+                                                     <th>Nombre</th>
+                                                     <td>${usuario.nombre}</td>
+                                                 </tr>
+                                                 <tr>
+                                                     <th>Apellidos</th>
+                                                     <td>${usuario.apellidos}</td>
+                                                 </tr>
+                                                 <tr>
+                                                     <th>Ciudad</th>
+                                                     <td>${usuario.ciudad}</td>
+                                                 </tr>
+                                             </table>`;
+                                     } else {
+                                         document.getElementById("datos").innerText = "No se encontraron datos.";
+                                     }
+                                 } catch (error) {
+                                     console.error("Error en los datos del usuario:", error);
+                                     document.getElementById("datos").innerText = "Error al mostrar los datos.";
+                                 }
+                             });
+                         } else {
+                             
+                             document.getElementById("datos").innerHTML = "";
+                         }
+                     }
+             
+                     window.onload = selectNombre;
+     
+                     */
+
+        // Usando async/await 
+
+
+        // Realizar una solicitud con fetch 
+
+        async function funFetchAsync(url) {
+            try {
+                const response = await fetch(url);
+                const datos = await response.json();
+                return datos;
+            } catch (error) {
+                throw new Error("Error en la solicitud: " + error.message);
+            }
+        }
+
+        // Carga la lista de nombres en el selector 
+
+        async function selectNombreAsync() {
+            try {
+                var selectContainer = document.getElementById("selectContainer");
+                var select = document.createElement("select");
+                select.id = "selectNombres";
+                select.onchange = async function () {
+                    await mostrarDatosAsync(this.value);
+                };
+
+                var optionDefault = document.createElement("option");
+                optionDefault.value = "";
+                optionDefault.textContent = "Seleccione un nombre";
+                select.appendChild(optionDefault);
+                selectContainer.appendChild(select);
+
+                const nombres = await funFetchAsync("jsonGET.php");
+                nombres.forEach(item => {
+                    var option = document.createElement("option");
+                    option.value = item.id;
+                    option.textContent = item.nombre;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                document.getElementById("datos").innerText = "Error al cargar los nombres.";
+            }
+        }
+
+        // Cargar los datos de la persona seleccionada 
+
+        async function mostrarDatosAsync(id) {
+            try {
+                if (id) {
+                    const obj = await funFetchAsync(`jsonGET.php?id=${id}`);
+                    if (obj.length > 0) {
+                        var usuario = obj[0];
+                        document.getElementById("datos").innerHTML = `
+                            <table border="1">
+                                <tr>
+                                    <th>ID</th>
+                                    <td>${usuario.id}</td>
+                                </tr>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <td>${usuario.nombre}</td>
+                                </tr>
+                                <tr>
+                                    <th>Apellidos</th>
+                                    <td>${usuario.apellidos}</td>
+                                </tr>
+                                <tr>
+                                    <th>Ciudad</th>
+                                    <td>${usuario.ciudad}</td>
+                                </tr>
+                            </table>`;
+                    } else {
+                        document.getElementById("datos").innerText = "No se encontraron datos.";
+                    }
+                } else {
+                    document.getElementById("datos").innerHTML = "";
+                }
+            } catch (error) {
+                document.getElementById("datos").innerText = "Error al mostrar los datos.";
+            }
+        }
+
+        window.onload = selectNombreAsync;
+
+
+    </script>
+</body>
+
+</html>
