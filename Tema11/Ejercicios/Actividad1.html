@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Actividad Tema 11</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+
+    <!-- Div donde se insertará el select dinámicamente -->
+    <div id="selectContainer"></div>
+
+    <br>
+    <!-- Tabla donde aparecerán los datos -->
+    <div id="datos">
+        La tabla se cargará aquí...
+    </div>
+
+    <script>
+        function funAjax(url, callback) {
+            $.ajax({
+                url: url,
+                method: 'GET',
+                success: function (data) {
+                    callback(data);
+                },
+                error: function () {
+                    console.error("Error en la petición AJAX");
+                }
+            });
+        }
+
+        /**
+         * Carga la lista de nombres en el selector, y crea el select dinámicamente
+         */
+        function selectNombre() {
+            // Crear el elemento <select> dinámicamente
+            var $selectContainer = $("#selectContainer");
+            var $select = $("<select>", { id: "nombreSelect" }).on("change", function () {
+                mostrarDatosUsuario(this.value);
+            });
+
+            // Insertar un option de "Seleccione un nombre"
+            var $optionDefault = $("<option>", { value: "", text: "Seleccione un nombre" });
+            $select.append($optionDefault);
+
+            // Insertar el select creado en el div del contenedor
+            $selectContainer.append($select);
+
+            // Obtener los nombres con AJAX
+            funAjax("jsonGET.php", function (response) {
+                try {
+                    let nombres = JSON.parse(response); // Procesar el JSON
+                    if (Array.isArray(nombres)) {
+                        // Agregar los nombres al select dinámicamente
+                        $.each(nombres, function (index, item) {
+                            let $option = $("<option>", { value: item.id, text: item.nombre });
+                            $select.append($option);
+                        });
+                    } else {
+                        throw new Error("El JSON no es un array");
+                    }
+                } catch (error) {
+                    console.error("Error procesando JSON:", error);
+                    $("#datos").text("Error al cargar los nombres.");
+                }
+            });
+        }
+
+        /**
+         * Cargar los datos de la persona seleccionada
+         */
+        function mostrarDatosUsuario(id) {
+            if (id) { // Si hay una selección
+                funAjax(`jsonGET.php?id=${id}`, function (response) {
+                    try {
+                        let obj = JSON.parse(response); // Procesar JSON
+                        if (obj.length > 0) { // Validar si hay datos
+                            let usuario = obj[0];
+                            // Mostrar los datos en tabla
+                            $("#datos").html(`
+                                <table border="1">
+                                    <tr>
+                                        <th>ID</th>
+                                        <td>${usuario.id}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Nombre</th>
+                                        <td>${usuario.nombre}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Apellidos</th>
+                                        <td>${usuario.apellidos}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Ciudad</th>
+                                        <td>${usuario.ciudad}</td>
+                                    </tr>
+                                </table>`);
+                        } else {
+                            $("#datos").text("No se encontraron datos.");
+                        }
+                    } catch (error) {
+                        console.error("Error en los datos del usuario:", error);
+                        $("#datos").text("Error al mostrar los datos.");
+                    }
+                });
+            } else {
+                // Si no hay selección, limpiar la tabla
+                $("#datos").html("");
+            }
+        }
+
+        // Inicializar la lista de nombres al cargar la página
+        $(document).ready(selectNombre);
+    </script>
+</body>
+
+</html>
