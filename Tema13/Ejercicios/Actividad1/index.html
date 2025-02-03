@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Actividad 1 Tema 13 </title>
+</head>
+<body>
+    <h1>Index.html leído</h1>
+    <button id="botonPulsar">Pulsar</button>
+    <div id="datos"></div>
+
+    <script>
+        document.getElementById("botonPulsar").addEventListener("click", () => {
+            fetch('/pagAjax')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("datos").innerText = `Hola ${data.NOMBRE}`;
+                })
+                .catch(error => console.error("Error:", error));
+        });
+    </script>
+</body>
+</html>
