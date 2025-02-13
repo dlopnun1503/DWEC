@@ -13,25 +13,41 @@ const __dirname = path.dirname(__filename);
 
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, "public"))); // Servir archivos estáticos
 
 // Conexión a MongoDB
-const uri = "mongodb://dlopnun1503:Dl132301@cluster0-shard-00-00.t0zmu.mongodb.net:27017,cluster0-shard-00-01.t0zmu.mongodb.net:27017,cluster0-shard-00-02.t0zmu.mongodb.net:27017/?replicaSet=atlas-xyz-shard-0&authSource=admin&ssl=true";
+const uri = "mongodb+srv://dlopnun1503:Dl132301@cluster0.t0zmu.mongodb.net/Instituto?retryWrites=true&w=majority";
 const client = new MongoClient(uri);
 let db, collection;
 
 async function connectDB() {
-  await client.connect();
-  db = client.db("Instituto");
-  collection = db.collection("alumnos");
-  console.log("✅ Conectado a MongoDB");
+  try {
+    console.log("Intentando conectar a MongoDB...");
+    await client.connect();
+    db = client.db("Instituto");
+    collection = db.collection("alumnos");
+    console.log("Conectado a MongoDB");
+
+    // Iniciar el servidor solo después de conectarse a MongoDB
+    app.listen(PORT, () => {
+      console.log(`Servidor corriendo en http://localhost:${PORT}`);
+    });
+
+  } catch (error) {
+    console.error("Error conectando a MongoDB:", error.message);
+    process.exit(1); 
+  }
 }
+
 connectDB();
 
-// API para obtener alumnos
-app.get("/api/alumnos", async (req, res) => {
-  const alumnos = await collection.find({}).toArray();
-  res.json(alumnos);
+// API para obtener alumnos 
+app.post("/api/alumnos/listar", async (req, res) => {
+  try {
+    const alumnos = await collection.find({}).toArray();
+    res.json(alumnos);
+  } catch (error) {
+    res.status(500).json({ message: "Error al obtener alumnos", error });
+  }
 });
 
 // API para agregar alumnos
@@ -45,10 +61,5 @@ app.post("/api/alumnos", async (req, res) => {
 
 // Servir el archivo HTML principal
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
-});
-
-// Iniciar servidor
-app.listen(PORT, () => {
-  console.log(`✅ Servidor corriendo en http://localhost:${PORT}`);
+  res.sendFile(path.join(__dirname, "index.html"));
 });

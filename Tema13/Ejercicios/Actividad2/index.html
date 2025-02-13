@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Instituto</title>
+</head>
+
+<body>
+  <h1>Lista de Alumnos</h1>
+
+ 
+  <table id="tablaAlumnos" border="1">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Apellidos</th>
+      </tr>
+    </thead>
+    <tbody id="lista"></tbody> 
+  </table>
+
+  <h2>Añadir Alumno</h2>
+  <input type="text" id="nombre" placeholder="Nombre">
+  <input type="text" id="apellido" placeholder="Apellidos">
+  <button id="anadir">Añadir</button>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const lista = document.getElementById("lista");
+      const nombreInput = document.getElementById("nombre");
+      const apellidoInput = document.getElementById("apellido");
+      const botonAnadir = document.getElementById("anadir");
+
+      // Función para cargar los alumnos
+      const cargarAlumnos = async () => {
+        const res = await fetch("/api/alumnos/listar", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({}) 
+        });
+
+        const alumnos = await res.json();
+        lista.innerHTML = "";
+
+        alumnos.forEach(a => {
+          const fila = document.createElement("tr");
+          const celdaNombre = document.createElement("td");
+          const celdaApellido = document.createElement("td");
+
+          celdaNombre.textContent = a.nombre;
+          celdaApellido.textContent = a.apellido;
+
+          fila.appendChild(celdaNombre);
+          fila.appendChild(celdaApellido);
+          lista.appendChild(fila);
+        });
+      };
+
+      // Evento para añadir un alumno
+      botonAnadir.addEventListener("click", async () => {
+        const nombre = nombreInput.value.trim();
+        const apellido = apellidoInput.value.trim();
+        if (!nombre || !apellido) return alert("Completa todos los campos");
+
+        await fetch("/api/alumnos", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ nombre, apellido })
+        });
+
+        // Limpiar los campos de entrada
+        nombreInput.value = "";
+        apellidoInput.value = "";
+
+        // Recargar la lista de alumnos
+        cargarAlumnos();
+      });
+
+      // Cargar los alumnos al cargar la página
+      cargarAlumnos();
+    });
+  </script>
+</body>
+
+</html>
